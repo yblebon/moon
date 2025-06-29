@@ -3,156 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 Moon Cycle Calendar</title>
+    <title>2025 Moon Phases</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1a1a2e;
-            color: #e0e0e0;
-            margin: 0;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            text-align: center;
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1532693326095-4966b6c2f146?auto=format&fit=crop&w=1920');
-            background-size: cover;
-            background-attachment: fixed;
+            background-color: #f0f0f0;
         }
         h1 {
-            color: #f4f4f9;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 10px;
+            text-align: center;
+            color: #1a3c5e;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         th, td {
-            padding: 12px;
-            border: 1px solid #4a4a7a;
+            padding: 10px;
             text-align: left;
+            border: 1px solid #ddd;
         }
         th {
-            background-color: #2e2e5e;
-            color: #f4f4f9;
+            background-color: #1a3c5e;
+            color: white;
         }
-        td {
-            background-color: #1f1f3a;
-        }
-        .month-header {
-            font-size: 1.5em;
-            margin-top: 20px;
-            color: #c0c0ff;
-        }
-        .loading, .error {
-            font-size: 1.2em;
-            color: #ff6b6b;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
         @media (max-width: 600px) {
-            table, th, td {
-                font-size: 0.9em;
+            table {
+                font-size: 14px;
+            }
+            th, td {
                 padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>2025 Moon Cycle Calendar</h1>
-        <p>Major moon phases (New Moon, First Quarter, Full Moon, Last Quarter) for 2025. Times are in UTC; convert to your local time zone.</p>
-        <div id="loading" class="loading">Loading moon phase data...</div>
-        <div id="error" class="error" style="display: none;"></div>
-        <div id="calendar"></div>
-        <p><em>Data sourced from the U.S. Naval Observatory API. For precise local times, consult an astronomical almanac or adjust for your time zone.</em></p>
-    </div>
-
-    <script>
-        // Fallback data in case API fails
-        const fallbackData = [
-            { phase: "New Moon", date: "2025 01 01", time: "12:34" },
-            { phase: "First Quarter", date: "2025 01 08", time: "15:45" },
-            { phase: "Full Moon", date: "2025 01 15", time: "23:12" },
-            { phase: "Last Quarter", date: "2025 01 23", time: "08:56" },
-            // Add more fallback data for other months as needed
-        ];
-
-        async function fetchMoonPhases() {
-            const apiUrl = 'https://aa.usno.navy.mil/api/moon/phases/year?year=2025';
-            const calendarDiv = document.getElementById('calendar');
-            const loadingDiv = document.getElementById('loading');
-            const errorDiv = document.getElementById('error');
-
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-
-                const data = await response.json();
-                console.log('Raw API Response:', data); // Log raw response for debugging
-
-                // Adjust based on actual API response structure
-                let phases = data.phasedata || data.data || data || fallbackData;
-                if (!Array.isArray(phases)) {
-                    throw new Error('Unexpected API response format');
-                }
-
-                // Organize data by month
-                const months = [
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
-                ];
-                const monthData = Array(12).fill().map(() => []);
-
-                phases.forEach(phase => {
-                    const date = new Date(`${phase.date} ${phase.time} UTC`);
-                    if (isNaN(date)) throw new Error(`Invalid date format: ${phase.date} ${phase.time}`);
-                    const monthIndex = date.getUTCMonth();
-                    monthData[monthIndex].push({
-                        phase: phase.phase,
-                        date: `${date.getUTCDate()} ${months[monthIndex]} ${date.getUTCFullYear()} ${phase.time}`
-                    });
-                });
-
-                // Generate HTML for each month
-                let html = '';
-                months.forEach((month, index) => {
-                    if (monthData[index].length > 0) {
-                        html += `<h2 class="month-header">${month}</h2>`;
-                        html += `<table><tr><th>Phase</th><th>Date and Time (UTC)</th></tr>`;
-                        monthData[index].forEach(phase => {
-                            html += `<tr><td>${phase.phase}</td><td>${phase.date}</td></tr>`;
-                        });
-                        html += `</table>`;
-                    }
-                });
-
-                calendarDiv.innerHTML = html;
-                loadingDiv.style.display = 'none';
-            } catch (error) {
-                loadingDiv.style.display = 'none';
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = `Error loading data: ${error.message}. Using fallback data.`;
-                console.error('Error:', error);
-
-                // Use fallback data
-                const months = ['January'];
-                let html = `<h2 class="month-header">January (Fallback)</h2>`;
-                html += `<table><tr><th>Phase</th><th>Date and Time (UTC)</th></tr>`;
-                fallbackData.forEach(phase => {
-                    html += `<tr><td>${phase.phase}</td><td>${phase.date} ${phase.time}</td></tr>`;
-                });
-                html += `</table>`;
-                calendarDiv.innerHTML = html;
-            }
-        }
-
-        // Fetch data when the page loads
-        window.onload = fetchMoonPhases;
-    </script>
+    <h1>2025 Moon Phases</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time (UT1)</th>
+                <th>Phase</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>2025-01-13</td><td>05:27</td><td>New Moon</td></tr>
+            <tr><td>2025-01-21</td><td>03:31</td><td>First Quarter</td></tr>
+            <tr><td>2025-01-29</td><td>07:36</td><td>Full Moon</td></tr>
+            <tr><td>2025-02-05</td><td>03:02</td><td>Last Quarter</td></tr>
+            <tr><td>2025-02-12</td><td>00:03</td><td>New Moon</td></tr>
+            <tr><td>2025-02-19</td><td>13:13</td><td>First Quarter</td></tr>
+            <tr><td>2025-02-27</td><td>18:18</td><td>Full Moon</td></tr>
+            <tr><td>2025-03-06</td><td>15:33</td><td>Last Quarter</td></tr>
+            <tr><td>2025-03-13</td><td>17:19</td><td>New Moon</td></tr>
+            <tr><td>2025-03-21</td><td>00:28</td><td>First Quarter</td></tr>
+            <tr><td>2025-03-29</td><td>05:58</td><td>Full Moon</td></tr>
+            <tr><td>2025-04-05</td><td>01:34</td><td>Last Quarter</td></tr>
+            <tr><td>2025-04-12</td><td>08:45</td><td>New Moon</td></tr>
+            <tr><td>2025-04-19</td><td>13:14</td><td>First Quarter</td></tr>
+            <tr><td>2025-04-27</td><td>15:37</td><td>Full Moon</td></tr>
+            <tr><td>2025-05-04</td><td>09:51</td><td>Last Quarter</td></tr>
+            <tr><td>2025-05-11</td><td>23:35</td><td>New Moon</td></tr>
+            <tr><td>2025-05-19</td><td>03:59</td><td>First Quarter</td></tr>
+            <tr><td>2025-05-27</td><td>01:02</td><td>Full Moon</td></tr>
+            <tr><td>2025-06-02</td><td>16:38</td><td>Last Quarter</td></tr>
+            <tr><td>2025-06-10</td><td>12:44</td><td>New Moon</td></tr>
+            <tr><td>2025-06-17</td><td>18:01</td><td>First Quarter</td></tr>
+            <tr><td>2025-06-25</td><td>06:31</td><td>Full Moon</td></tr>
+            <tr><td>2025-07-02</td><td>00:30</td><td>Last Quarter</td></tr>
+            <tr><td>2025-07-10</td><td>00:36</td><td>New Moon</td></tr>
+            <tr><td>2025-07-17</td><td>06:38</td><td>First Quarter</td></tr>
+            <tr><td>2025-07-24</td><td>15:11</td><td>Full Moon</td></tr>
+            <tr><td>2025-07-31</td><td>09:48</td><td>Last Quarter</td></tr>
+            <tr><td>2025-08-08</td><td>11:31</td><td>New Moon</td></tr>
+            <tr><td>2025-08-15</td><td>17:13</td><td>First Quarter</td></tr>
+            <tr><td>2025-08-23</td><td>01:07</td><td>Full Moon</td></tr>
+            <tr><td>2025-08-29</td><td>21:08</td><td>Last Quarter</td></tr>
+            <tr><td>2025-09-06</td><td>21:53</td><td>New Moon</td></tr>
+            <tr><td>2025-09-14</td><td>02:34</td><td>First Quarter</td></tr>
+            <tr><td>2025-09-21</td><td>13:54</td><td>Full Moon</td></tr>
+            <tr><td>2025-09-28</td><td>11:18</td><td>Last Quarter</td></tr>
+            <tr><td>2025-10-06</td><td>09:48</td><td>New Moon</td></tr>
+            <tr><td>2025-10-13</td><td>11:14</td><td>First Quarter</td></tr>
+            <tr><td>2025-10-21</td><td>04:25</td><td>Full Moon</td></tr>
+            <tr><td>2025-10-28</td><td>02:59</td><td>Last Quarter</td></tr>
+            <tr><td>2025-11-05</td><td>00:19</td><td>New Moon</td></tr>
+            <tr><td>2025-11-11</td><td>20:29</td><td>First Quarter</td></tr>
+            <tr><td>2025-11-19</td><td>19:28</td><td>Full Moon</td></tr>
+            <tr><td>2025-11-26</td><td>17:45</td><td>Last Quarter</td></tr>
+            <tr><td>2025-12-04</td><td>15:14</td><td>New Moon</td></tr>
+            <tr><td>2025-12-11</td><td>06:51</td><td>First Quarter</td></tr>
+            <tr><td>2025-12-19</td><td>09:52</td><td>Full Moon</td></tr>
+            <tr><td>2025-12-26</td><td>10:11</td><td>Last Quarter</td></tr>
+            <tr><td>2026-01-03</td><td>06:06</td><td>New Moon</td></tr>
+            <tr><td>2026-01-09</td><td>19:14</td><td>First Quarter</td></tr>
+        </tbody>
+    </table>
+    <p><small>Data source: U.S. Naval Observatory Astronomical Applications API (<a href="https://aa.usno.navy.mil/api/moon/phases/year?year=2025">aa.usno.navy.mil</a>)</small></p>
 </body>
 </html>
