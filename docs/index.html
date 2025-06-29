@@ -3,111 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 Moon Phases</title>
+    <title>Moon Phases by Year (Paris Time)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
+            line-height: 1.6;
         }
         h1 {
             text-align: center;
-            color: #1a3c5e;
+            color: #333;
+        }
+        p {
+            text-align: center;
+            color: #555;
+        }
+        select {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         th, td {
+            border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
-            border: 1px solid #ddd;
         }
         th {
-            background-color: #1a3c5e;
-            color: white;
+            background-color: #f4f4f4;
+            color: #333;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+        .error {
+            color: red;
+            text-align: center;
+            display: none;
+        }
         @media (max-width: 600px) {
-            table {
+            table, th, td {
                 font-size: 14px;
             }
-            th, td {
-                padding: 8px;
+            select {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <h1>2025 Moon Phases</h1>
-    <table>
+    <h1>Moon Phases by Year</h1>
+    <p>Select a year to view the dates and times of the major moon phases (New Moon, First Quarter, Full Moon, Last Quarter) in Paris local time, sourced from the U.S. Naval Observatory.</p>
+    <select id="yearSelect" onchange="fetchMoonPhases()">
+        <option value="" disabled selected>Select a year</option>
+    </select>
+    <table id="moonTable">
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Time (UT1)</th>
+                <th>Time (Paris)</th>
                 <th>Phase</th>
             </tr>
         </thead>
-        <tbody>
-            <tr><td>2025-01-13</td><td>05:27</td><td>New Moon</td></tr>
-            <tr><td>2025-01-21</td><td>03:31</td><td>First Quarter</td></tr>
-            <tr><td>2025-01-29</td><td>07:36</td><td>Full Moon</td></tr>
-            <tr><td>2025-02-05</td><td>03:02</td><td>Last Quarter</td></tr>
-            <tr><td>2025-02-12</td><td>00:03</td><td>New Moon</td></tr>
-            <tr><td>2025-02-19</td><td>13:13</td><td>First Quarter</td></tr>
-            <tr><td>2025-02-27</td><td>18:18</td><td>Full Moon</td></tr>
-            <tr><td>2025-03-06</td><td>15:33</td><td>Last Quarter</td></tr>
-            <tr><td>2025-03-13</td><td>17:19</td><td>New Moon</td></tr>
-            <tr><td>2025-03-21</td><td>00:28</td><td>First Quarter</td></tr>
-            <tr><td>2025-03-29</td><td>05:58</td><td>Full Moon</td></tr>
-            <tr><td>2025-04-05</td><td>01:34</td><td>Last Quarter</td></tr>
-            <tr><td>2025-04-12</td><td>08:45</td><td>New Moon</td></tr>
-            <tr><td>2025-04-19</td><td>13:14</td><td>First Quarter</td></tr>
-            <tr><td>2025-04-27</td><td>15:37</td><td>Full Moon</td></tr>
-            <tr><td>2025-05-04</td><td>09:51</td><td>Last Quarter</td></tr>
-            <tr><td>2025-05-11</td><td>23:35</td><td>New Moon</td></tr>
-            <tr><td>2025-05-19</td><td>03:59</td><td>First Quarter</td></tr>
-            <tr><td>2025-05-27</td><td>01:02</td><td>Full Moon</td></tr>
-            <tr><td>2025-06-02</td><td>16:38</td><td>Last Quarter</td></tr>
-            <tr><td>2025-06-10</td><td>12:44</td><td>New Moon</td></tr>
-            <tr><td>2025-06-17</td><td>18:01</td><td>First Quarter</td></tr>
-            <tr><td>2025-06-25</td><td>06:31</td><td>Full Moon</td></tr>
-            <tr><td>2025-07-02</td><td>00:30</td><td>Last Quarter</td></tr>
-            <tr><td>2025-07-10</td><td>00:36</td><td>New Moon</td></tr>
-            <tr><td>2025-07-17</td><td>06:38</td><td>First Quarter</td></tr>
-            <tr><td>2025-07-24</td><td>15:11</td><td>Full Moon</td></tr>
-            <tr><td>2025-07-31</td><td>09:48</td><td>Last Quarter</td></tr>
-            <tr><td>2025-08-08</td><td>11:31</td><td>New Moon</td></tr>
-            <tr><td>2025-08-15</td><td>17:13</td><td>First Quarter</td></tr>
-            <tr><td>2025-08-23</td><td>01:07</td><td>Full Moon</td></tr>
-            <tr><td>2025-08-29</td><td>21:08</td><td>Last Quarter</td></tr>
-            <tr><td>2025-09-06</td><td>21:53</td><td>New Moon</td></tr>
-            <tr><td>2025-09-14</td><td>02:34</td><td>First Quarter</td></tr>
-            <tr><td>2025-09-21</td><td>13:54</td><td>Full Moon</td></tr>
-            <tr><td>2025-09-28</td><td>11:18</td><td>Last Quarter</td></tr>
-            <tr><td>2025-10-06</td><td>09:48</td><td>New Moon</td></tr>
-            <tr><td>2025-10-13</td><td>11:14</td><td>First Quarter</td></tr>
-            <tr><td>2025-10-21</td><td>04:25</td><td>Full Moon</td></tr>
-            <tr><td>2025-10-28</td><td>02:59</td><td>Last Quarter</td></tr>
-            <tr><td>2025-11-05</td><td>00:19</td><td>New Moon</td></tr>
-            <tr><td>2025-11-11</td><td>20:29</td><td>First Quarter</td></tr>
-            <tr><td>2025-11-19</td><td>19:28</td><td>Full Moon</td></tr>
-            <tr><td>2025-11-26</td><td>17:45</td><td>Last Quarter</td></tr>
-            <tr><td>2025-12-04</td><td>15:14</td><td>New Moon</td></tr>
-            <tr><td>2025-12-11</td><td>06:51</td><td>First Quarter</td></tr>
-            <tr><td>2025-12-19</td><td>09:52</td><td>Full Moon</td></tr>
-            <tr><td>2025-12-26</td><td>10:11</td><td>Last Quarter</td></tr>
-            <tr><td>2026-01-03</td><td>06:06</td><td>New Moon</td></tr>
-            <tr><td>2026-01-09</td><td>19:14</td><td>First Quarter</td></tr>
+        <tbody id="moonData">
+            <tr><td colspan="3">Select a year to load moon phase data...</td></tr>
         </tbody>
     </table>
-    <p><small>Data source: U.S. Naval Observatory Astronomical Applications API (<a href="https://aa.usno.navy.mil/api/moon/phases/year?year=2025">aa.usno.navy.mil</a>)</small></p>
+    <p id="error" class="error"></p>
+
+    <script>
+        // Month names for formatting
+        const monthNames = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+
+        // Function to determine if a date is in DST (CEST) for Paris in 2025
+        function isDST(year, month, day) {
+            const date = new Date(Date.UTC(year, month - 1, day));
+            // DST in 2025: March 30, 01:00 UTC to October 26, 01:00 UTC
+            const dstStart = new Date(Date.UTC(year, 2, 30, 1)); // March 30, 2025, 01:00 UTC
+            const dstEnd = new Date(Date.UTC(year, 9, 26, 1));   // October 26, 2025, 01:00 UTC
+            return date >= dstStart && date < dstEnd;
+        }
+
+        // Function to convert UTC time to Paris time
+        function convertToParisTime(year, month, day, utcTime) {
+            if (!utcTime || utcTime === 'N/A') return 'N/A';
+            // Parse UTC time (e.g., "07:36")
+            const [hours, minutes] = utcTime.split(':').map(Number);
+            const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+            // Apply Paris offset: UTC+2 (CEST) during DST, UTC+1 (CET) otherwise
+            const offset = isDST(year, month, day) ? 2 : 1;
+            utcDate.setHours(utcDate.getHours() + offset);
+            // Format time as HH:MM
+            const localHours = utcDate.getHours().toString().padStart(2, '0');
+            const localMinutes = utcDate.getMinutes().toString().padStart(2, '0');
+            return `${localHours}:${localMinutes}`;
+        }
+
+        // Populate year dropdown (2020–2030)
+        const yearSelect = document.getElementById('yearSelect');
+        const currentYear = new Date().getFullYear();
+        for (let year = 2020; year <= 2030; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year === currentYear) {
+                option.selected = true;
+            }
+            yearSelect.appendChild(option);
+        }
+
+        async function fetchMoonPhases() {
+            const year = yearSelect.value;
+            if (!year) {
+                document.getElementById('moonData').innerHTML = '<tr><td colspan="3">Select a year to load moon phase data...</td></tr>';
+                document.getElementById('error').style.display = 'none';
+                return;
+            }
+
+            const url = `https://aa.usno.navy.mil/api/moon/phases/year?year=${year}`;
+            const tbody = document.getElementById('moonData');
+            const errorDiv = document.getElementById('error');
+
+            // Clear previous content
+            tbody.innerHTML = '<tr><td colspan="3">Loading moon phase data...</td></tr>';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Check if API returned an error
+                if (data.error) {
+                    throw new Error(data.errormsg || 'Unknown API error');
+                }
+
+                // Extract moon phase data
+                const phases = data.phasedata || [];
+                if (phases.length === 0) {
+                    throw new Error('No moon phase data available for the selected year.');
+                }
+
+                // Populate table with phase data
+                tbody.innerHTML = '';
+                phases.forEach(phase => {
+                    // Format date from day, month, year
+                    const formattedDate = `${phase.year} ${monthNames[phase.month - 1]} ${phase.day.toString().padStart(2, '0')}`;
+                    // Convert UTC time to Paris time
+                    const parisTime = convertToParisTime(phase.year, phase.month, phase.day, phase.time);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${parisTime}</td>
+                        <td>${phase.phase}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching moon phases:', error);
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+                tbody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
+            }
+        }
+
+        // Fetch data for the default year (current year) on page load
+        window.onload = fetchMoonPhases;
+    </script>
 </body>
 </html>
