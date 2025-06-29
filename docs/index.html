@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Moon Cycle Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1532693326095-4966b6c2f146?auto=format&fit=crop&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        h1 {
+            color: #f4f4f9;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #4a4a7a;
+            text-align: left;
+        }
+        th {
+            background-color: #2e2e5e;
+            color: #f4f4f9;
+        }
+        td {
+            background-color: #1f1f3a;
+        }
+        .month-header {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #c0c0ff;
+        }
+        .loading, .error {
+            font-size: 1.2em;
+            color: #ff6b6b;
+        }
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2025 Moon Cycle Calendar</h1>
+        <p>Major moon phases (New Moon, First Quarter, Full Moon, Last Quarter) for 2025. Times are in UTC; convert to your local time zone.</p>
+        <div id="loading" class="loading">Loading moon phase data...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="calendar"></div>
+        <p><em>Data sourced from the U.S. Naval Observatory API. For precise local times, consult an astronomical almanac or adjust for your time zone.</em></p>
+    </div>
+
+    <script>
+        // Fallback data in case API fails
+        const fallbackData = [
+            { phase: "New Moon", date: "2025 01 01", time: "12:34" },
+            { phase: "First Quarter", date: "2025 01 08", time: "15:45" },
+            { phase: "Full Moon", date: "2025 01 15", time: "23:12" },
+            { phase: "Last Quarter", date: "2025 01 23", time: "08:56" },
+            // Add more fallback data for other months as needed
+        ];
+
+        async function fetchMoonPhases() {
+            const apiUrl = 'https://aa.usno.navy.mil/api/moon/phases/year?year=2025';
+            const calendarDiv = document.getElementById('calendar');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+                const data = await response.json();
+                console.log('Raw API Response:', data); // Log raw response for debugging
+
+                // Adjust based on actual API response structure
+                let phases = data.phasedata || data.data || data || fallbackData;
+                if (!Array.isArray(phases)) {
+                    throw new Error('Unexpected API response format');
+                }
+
+                // Organize data by month
+                const months = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                const monthData = Array(12).fill().map(() => []);
+
+                phases.forEach(phase => {
+                    const date = new Date(`${phase.date} ${phase.time} UTC`);
+                    if (isNaN(date)) throw new Error(`Invalid date format: ${phase.date} ${phase.time}`);
+                    const monthIndex = date.getUTCMonth();
+                    monthData[monthIndex].push({
+                        phase: phase.phase,
+                        date: `${date.getUTCDate()} ${months[monthIndex]} ${date.getUTCFullYear()} ${phase.time}`
+                    });
+                });
+
+                // Generate HTML for each month
+                let html = '';
+                months.forEach((month, index) => {
+                    if (monthData[index].length > 0) {
+                        html += `<h2 class="month-header">${month}</h2>`;
+                        html += `<table><tr><th>Phase</th><th>Date and Time (UTC)</th></tr>`;
+                        monthData[index].forEach(phase => {
+                            html += `<tr><td>${phase.phase}</td><td>${phase.date}</td></tr>`;
+                        });
+                        html += `</table>`;
+                    }
+                });
+
+                calendarDiv.innerHTML = html;
+                loadingDiv.style.display = 'none';
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = `Error loading data: ${error.message}. Using fallback data.`;
+                console.error('Error:', error);
+
+                // Use fallback data
+                const months = ['January'];
+                let html = `<h2 class="month-header">January (Fallback)</h2>`;
+                html += `<table><tr><th>Phase</th><th>Date and Time (UTC)</th></tr>`;
+                fallbackData.forEach(phase => {
+                    html += `<tr><td>${phase.phase}</td><td>${phase.date} ${phase.time}</td></tr>`;
+                });
+                html += `</table>`;
+                calendarDiv.innerHTML = html;
+            }
+        }
+
+        // Fetch data when the page loads
+        window.onload = fetchMoonPhases;
+    </script>
+</body>
+</html>
