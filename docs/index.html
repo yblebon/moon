@@ -3,185 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moon Phases by Year (Paris Time)</title>
+    <title>Moon Phases | Paris Time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #05070a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --accent-color: #a5b4fc;
+            --highlight-bg: rgba(165, 180, 252, 0.15);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #05070a);
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
             padding: 20px;
             line-height: 1.6;
+            scroll-behavior: smooth;
         }
-        h1 {
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Countdown Hero Section */
+        .hero {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
             text-align: center;
-            color: #333;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        p {
-            text-align: center;
-            color: #555;
+
+        .hero h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent-color);
+            margin: 0 0 10px 0;
         }
+
+        #countdown {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            margin: 10px 0;
+            background: linear-gradient(to bottom, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
         select {
-            display: block;
-            margin: 20px auto;
-            padding: 10px;
-            font-size: 16px;
-            width: 200px;
+            background: var(--card-bg);
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+            padding-right: 40px;
         }
+
+        /* Table Styling */
+        .table-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
             text-align: left;
         }
+
         th {
-            background-color: #f4f4f4;
-            color: #333;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--glass-border);
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--glass-border);
         }
+
+        /* Highlight Logic */
+        .next-event {
+            background: var(--highlight-bg) !important;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .next-label {
+            font-size: 0.7rem;
+            background: var(--accent-color);
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .phase-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .phase-icon { font-size: 1.4rem; }
+
+        .time-cell {
+            font-family: 'Courier New', monospace;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
         .error {
-            color: red;
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 16px;
+            border-radius: 12px;
             text-align: center;
             display: none;
         }
+
         @media (max-width: 600px) {
-            table, th, td {
-                font-size: 14px;
-            }
-            select {
-                width: 100%;
-            }
+            #countdown { font-size: 1.8rem; }
+            td, th { padding: 12px; font-size: 0.85rem; }
+            .controls { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
-    <h1>Moon Phases by Year</h1>
-    <p>Select a year to view the dates and times of the major moon phases (New Moon, First Quarter, Full Moon, Last Quarter) in Paris local time, sourced from the U.S. Naval Observatory.</p>
-    <select id="yearSelect" onchange="fetchMoonPhases()">
-        <option value="" disabled selected>Select a year</option>
-    </select>
-    <table id="moonTable">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time (Paris)</th>
-                <th>Phase</th>
-            </tr>
-        </thead>
-        <tbody id="moonData">
-            <tr><td colspan="3">Select a year to load moon phase data...</td></tr>
-        </tbody>
-    </table>
+
+<div class="container">
+    <div class="hero" id="heroSection">
+        <h2 id="heroTitle">Next Full Moon</h2>
+        <div id="countdown">Calculating...</div>
+        <p class="subtitle" id="heroDate" style="color: var(--text-dim); margin: 0;"></p>
+    </div>
+
+    <div class="controls">
+        <div style="text-align: left;">
+            <h1 style="margin:0; font-size: 1.5rem;">Lunar Calendar</h1>
+            <p style="margin:0; color: var(--text-dim); font-size: 0.8rem;">Paris, France (CET/CEST)</p>
+        </div>
+        <select id="yearSelect" onchange="fetchMoonPhases()"></select>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Lunar Phase</th>
+                </tr>
+            </thead>
+            <tbody id="moonData"></tbody>
+        </table>
+    </div>
+    
     <p id="error" class="error"></p>
+</div>
 
-    <script>
-        // Month names for formatting
-        const monthNames = [
-            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-        ];
+<script>
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const phaseIcons = { 'New Moon': '🌑', 'First Quarter': '🌓', 'Full Moon': '🌕', 'Last Quarter': '🌗' };
+    let countdownInterval;
 
-        // Function to determine if a date is in DST (CEST) for Paris in 2025
-        function isDST(year, month, day) {
-            const date = new Date(Date.UTC(year, month - 1, day));
-            // DST in 2025: March 30, 01:00 UTC to October 26, 01:00 UTC
-            const dstStart = new Date(Date.UTC(year, 2, 30, 1)); // March 30, 2025, 01:00 UTC
-            const dstEnd = new Date(Date.UTC(year, 9, 26, 1));   // October 26, 2025, 01:00 UTC
-            return date >= dstStart && date < dstEnd;
-        }
+    function getParisDate(year, month, day, time) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+        // Convert to Paris string and back to date object to get local offset correctly
+        const parisStr = utcDate.toLocaleString("en-US", {timeZone: "Europe/Paris"});
+        return new Date(parisStr);
+    }
 
-        // Function to convert UTC time to Paris time
-        function convertToParisTime(year, month, day, utcTime) {
-            if (!utcTime || utcTime === 'N/A') return 'N/A';
-            // Parse UTC time (e.g., "07:36")
-            const [hours, minutes] = utcTime.split(':').map(Number);
-            const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-            // Apply Paris offset: UTC+2 (CEST) during DST, UTC+1 (CET) otherwise
-            const offset = isDST(year, month, day) ? 2 : 1;
-            utcDate.setHours(utcDate.getHours() + offset);
-            // Format time as HH:MM
-            const localHours = utcDate.getHours().toString().padStart(2, '0');
-            const localMinutes = utcDate.getMinutes().toString().padStart(2, '0');
-            return `${localHours}:${localMinutes}`;
-        }
+    function updateCountdown(targetDate) {
+        clearInterval(countdownInterval);
+        const timerDisplay = document.getElementById('countdown');
+        
+        function refresh() {
+            const now = new Date();
+            const diff = targetDate - now;
 
-        // Populate year dropdown (2020–2030)
-        const yearSelect = document.getElementById('yearSelect');
-        const currentYear = new Date().getFullYear();
-        for (let year = 2020; year <= 2030; year++) {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            if (year === currentYear) {
-                option.selected = true;
-            }
-            yearSelect.appendChild(option);
-        }
-
-        async function fetchMoonPhases() {
-            const year = yearSelect.value;
-            if (!year) {
-                document.getElementById('moonData').innerHTML = '<tr><td colspan="3">Select a year to load moon phase data...</td></tr>';
-                document.getElementById('error').style.display = 'none';
+            if (diff <= 0) {
+                timerDisplay.innerText = "Moon is Rising...";
                 return;
             }
 
-            const url = `https://aa.usno.navy.mil/api/moon/phases/year?year=${year}`;
-            const tbody = document.getElementById('moonData');
-            const errorDiv = document.getElementById('error');
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-            // Clear previous content
-            tbody.innerHTML = '<tr><td colspan="3">Loading moon phase data...</td></tr>';
-            errorDiv.style.display = 'none';
-
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-
-                // Check if API returned an error
-                if (data.error) {
-                    throw new Error(data.errormsg || 'Unknown API error');
-                }
-
-                // Extract moon phase data
-                const phases = data.phasedata || [];
-                if (phases.length === 0) {
-                    throw new Error('No moon phase data available for the selected year.');
-                }
-
-                // Populate table with phase data
-                tbody.innerHTML = '';
-                phases.forEach(phase => {
-                    // Format date from day, month, year
-                    const formattedDate = `${phase.year} ${monthNames[phase.month - 1]} ${phase.day.toString().padStart(2, '0')}`;
-                    // Convert UTC time to Paris time
-                    const parisTime = convertToParisTime(phase.year, phase.month, phase.day, phase.time);
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${formattedDate}</td>
-                        <td>${parisTime}</td>
-                        <td>${phase.phase}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error fetching moon phases:', error);
-                errorDiv.textContent = `Error: ${error.message}`;
-                errorDiv.style.display = 'block';
-                tbody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
-            }
+            timerDisplay.innerText = `${d}d ${h}h ${m}m ${s}s`;
         }
+        
+        refresh();
+        countdownInterval = setInterval(refresh, 1000);
+    }
 
-        // Fetch data for the default year (current year) on page load
-        window.onload = fetchMoonPhases;
-    </script>
+    // Initialize Year Dropdown
+    const yearSelect = document.getElementById('yearSelect');
+    const currentYear = new Date().getFullYear();
+    for (let year = 2020; year <= 2030; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        if (year === currentYear) option.selected = true;
+        yearSelect.appendChild(option);
+    }
+
+    async function fetchMoonPhases() {
+        const year = yearSelect.value;
+        const tbody = document.getElementById('moonData');
+        const errorDiv = document.getElementById('error');
+        const now = new Date();
+
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px;">Loading celestial data...</td></tr>';
+        
+        try {
+            const response = await fetch(`https://aa.usno.navy.mil/api/moon/phases/year?year=${year}`);
+            const data = await response.json();
+            const phases = data.phasedata;
+            
+            tbody.innerHTML = '';
+            let closestRow = null;
+            let nextFullMoon = null;
+
+            phases.forEach((phase, index) => {
+                const parisDate = getParisDate(phase.year, phase.month, phase.day, phase.time);
+                const isFuture = parisDate > now;
+                
+                const row = document.createElement('tr');
+                if (isFuture && !closestRow) {
+                    closestRow = row;
+                    row.className = 'next-event';
+                }
+
+                // Logic for hero countdown (next full moon)
+                if (isFuture && phase.phase === 'Full Moon' && !nextFullMoon) {
+                    nextFullMoon = parisDate;
+                    document.getElementById('heroDate').innerText = parisDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                    updateCountdown(parisDate);
+                }
+
+                const timeStr = parisDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+                const dateStr = `${phase.day} ${monthNames[phase.month - 1]} ${phase.year}`;
+
+                row.innerHTML = `
+                    <td>${dateStr}</td>
+                    <td class="time-cell">${timeStr}</td>
+                    <td>
+                        <div class="phase-cell">
+                            <span class="phase-icon">${phaseIcons[phase.phase] || '🌙'}</span>
+                            <span>${phase.phase}</span>
+                            ${row.className === 'next-event' ? '<span class="next-label">UP NEXT</span>' : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Handle hero visibility if no future dates found in selected year
+            document.getElementById('heroSection').style.opacity = nextFullMoon ? "1" : "0.3";
+            if (!nextFullMoon) document.getElementById('countdown').innerText = "No upcoming dates in this year";
+
+            // Focus: Scroll to the closest date
+            if (closestRow) {
+                setTimeout(() => {
+                    closestRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 500);
+            }
+
+        } catch (error) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = "Error loading data. The USNO API may be temporarily down.";
+        }
+    }
+
+    window.onload = fetchMoonPhases;
+</script>
+
 </body>
 </html>
